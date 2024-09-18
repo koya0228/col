@@ -113,6 +113,10 @@ function clickKeyboard(command) {
       userLatestAns = '';
       answerCount += 1;
       inputCount = 0;
+
+      if(answerCount === 5) {
+        $('.color_display')[0].innerText = `#${ansColor}`;
+      }
     }
   }
   else if(command === 'delete') {
