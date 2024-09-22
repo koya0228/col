@@ -6,7 +6,7 @@ let userLatestAns = '';
 let answerCount = 0;
 let inputCount = 0;
 
-const $ = (selector) => { return document.querySelectorAll(selector) }
+const $ = (selector) => { return document.querySelectorAll(selector) };
 
 function getRandomColor() {
   return Math.random().toString(16).slice(-6).toUpperCase();
@@ -14,7 +14,6 @@ function getRandomColor() {
 
 function colorReset() {
   ansColor = getRandomColor();  
-  console.log(ansColor);
   $('.color_display')[0].style.backgroundColor = `#${ansColor}`;
 
   const brightness = 
@@ -43,7 +42,14 @@ function allReset() {
   const ansColorDisplayList = $('.ans_color_display');
   ansColorDisplayList.forEach((ansColorDisplay) => {
     ansColorDisplay.style.backgroundColor = '';
-  })
+  });
+  const keyboardCellList = $('.keyboard_cell');
+  keyboardCellList.forEach((keyboardCell) => {
+    keyboardCell.dataset.check = '';
+  });
+  $('.keyboard_cell').forEach((keyboardCell) => {
+    keyboardCell.style.borderColor = '';
+  });
 }
 
 function getSameCharIndex(char, original) {
@@ -65,6 +71,22 @@ function displayCheckResult(checkResultList) {
     }
     else {
       cell.dataset.check = 'unuse';
+    }
+
+    const userAnsChar = userLatestAns[i];
+    const userAnsKeyBoardCell = $(`.keyboard_cell[data-command="${userAnsChar}"]`)[0];
+    if(checkResultList[i] === 2) {
+      userAnsKeyBoardCell.dataset.check = 'correct';
+    }
+    else if(checkResultList[i] === 1) {
+      if(userAnsKeyBoardCell.dataset.check != 'correct'){
+        userAnsKeyBoardCell.dataset.check = 'nearly';
+      }
+    }
+    else if(checkResultList[i] === -1) {
+      if(!userAnsKeyBoardCell.dataset.check){
+        userAnsKeyBoardCell.dataset.check = 'unuse';
+      }
     }
   }
 }
@@ -122,7 +144,7 @@ function clickKeyboard(command) {
       answerCount += 1;
       inputCount = 0;
 
-      if(answerCount === 5) {
+      if(answerCount === 6) {
         $('.color_display')[0].innerText = `#${ansColor}`;
       }
     }
@@ -142,6 +164,13 @@ function clickKeyboard(command) {
       inputCount += 1;
     }
   }
+
+  $('.keyboard_cell').forEach((keyboardCell) => {
+    keyboardCell.style.borderColor = '';
+  });
+  for(let i=0; i<userLatestAns.length; i++) {
+    $(`.keyboard_cell[data-command="${userLatestAns[i]}"]`)[0].style.borderColor = 'var(--colorBlue)';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -150,14 +179,14 @@ document.addEventListener('DOMContentLoaded', () => {
   for(let i=0; i<keyboardCellList.length; i++) {
     keyboardCellList[i].addEventListener('click', (e) => {
       const keyboardCell = e.target;
-      clickKeyboard(keyboardCell.dataset.command)
+      clickKeyboard(keyboardCell.dataset.command);
     });
   }
 
   const reloadButton = $('.color_reload')[0];
   reloadButton.addEventListener('click', () => {
     allReset();
-  })
+  });
 });
 
 document.addEventListener('keydown', e => {
