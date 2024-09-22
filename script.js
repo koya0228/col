@@ -14,7 +14,15 @@ function getRandomColor() {
 
 function colorReset() {
   ansColor = getRandomColor();  
+  console.log(ansColor);
   $('.color_display')[0].style.backgroundColor = `#${ansColor}`;
+
+  const brightness = 
+    (parseInt(ansColor.substr(0, 2), 16) * 0.299) +
+    (parseInt(ansColor.substr(2, 2), 16) * 0.587) +
+    (parseInt(ansColor.substr(4, 2), 16) * 0.114);
+  const color = brightness >= 140 ? '000000' : 'FFFFFF';
+  $('.color_display')[0].style.color = `#${color}`;
 }
 
 function allReset() {
@@ -30,7 +38,7 @@ function allReset() {
   const ansInputCellList = $('.ans_input_cell');
   ansInputCellList.forEach((ansinputCell) => {
     ansinputCell.innerText = '';
-    ansinputCell.style.backgroundColor = '';
+    ansinputCell.dataset.check = '';
   });
   const ansColorDisplayList = $('.ans_color_display');
   ansColorDisplayList.forEach((ansColorDisplay) => {
@@ -50,13 +58,13 @@ function displayCheckResult(checkResultList) {
   for(let i=0; i<6; i++) {
     const cell = $('.ans_input')[answerCount].querySelectorAll('.ans_input_cell')[i];
     if(checkResultList[i] === 2) {
-      cell.style.backgroundColor = '#00ff00';
+      cell.dataset.check = 'correct';
     }
     else if(checkResultList[i] === 1) {
-      cell.style.backgroundColor = '#ffff00';
+      cell.dataset.check = 'nearly';
     }
     else {
-      cell.style.backgroundColor = '#888888';
+      cell.dataset.check = 'unuse';
     }
   }
 }
@@ -67,8 +75,8 @@ function checkAns() {
 
   if(userLatestAns === tempAnsColor) {
     displayCheckResult([2, 2, 2, 2, 2, 2]);
-    return 1
-  };
+    return 1;
+  }
 
   for(let i=0; i<6; i++) {
     if(userLatestAns[i] === tempAnsColor[i]) {
@@ -82,8 +90,8 @@ function checkAns() {
     const sameCharCountInAns = getSameCharIndex(userLatestAns[i], tempAnsColor.split('')).length;
 
     for(let j=0; j<sameCharCountInAns; j++) {
-      const charIndex = sameCharIndexesInAns[j]
-      if(checkResultList[charIndex] != 2) {
+      const charIndex = sameCharIndexesInAns[j];
+      if(checkResultList[i] != 2) {
         checkResultList[i] = 1;
         tempAnsColor = tempAnsColor.slice(0, charIndex) + 'Z' + tempAnsColor.slice(charIndex+1, 6);
         break;
